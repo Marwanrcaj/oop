@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Bear Love 🧸💕</title>
+<style>
+  :root{
+    --pink:#FFC9DE;
+    --pink-deep:#FF9EC0;
+    --cream:#FFF8EE;
+    --blue:#CDECFB;
+    --brown:#8B5E3C;
+    --ink:#6b544a;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    font-family:'Trebuchet MS','Comic Sans MS',system-ui,sans-serif;
+    overflow:hidden;
+    background:linear-gradient(160deg, var(--blue) 0%, var(--pink) 55%, #FFE3EF 100%);
+    -webkit-user-select:none;user-select:none;
+  }
+  #bgHearts{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+  .bgHeart{position:absolute;bottom:-40px;font-size:20px;opacity:0.55;animation:floatUp linear forwards;}
+  @keyframes floatUp{
+    0%{transform:translateY(0) rotate(0deg);opacity:0;}
+    10%{opacity:0.6;}
+    90%{opacity:0.5;}
+    100%{transform:translateY(-110vh) rotate(25deg);opacity:0;}
+  }
+ 
+  #wrap{
+    position:relative;z-index:1;
+    min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px 16px 32px;
+    gap:10px;
+  }
+ 
+  h1{
+    margin:0 0 4px;color:var(--brown);font-size:clamp(24px,6vw,34px);
+    text-shadow:2px 2px 0 #fff, 0 0 18px rgba(255,255,255,0.6);
+    letter-spacing:1px;
+  }
+  .tagline{margin:0 0 6px;color:#a3826b;font-size:13px;font-weight:700;}
+ 
+  #stageCard{
+    position:relative;
+    width:min(92vw, 360px);
+    aspect-ratio:1/1;
+    background:radial-gradient(circle at 50% 30%, #fff 0%, var(--cream) 55%, #FFE9F2 100%);
+    border-radius:32px;
+    border:6px solid #fff;
+    box-shadow:0 18px 40px rgba(180,120,150,0.35), inset 0 0 0 4px var(--pink);
+    overflow:hidden;
+  }
+  #stageCard canvas{position:absolute;top:0;left:0;width:100%;height:100%;}
+ 
+  #speech{
+    position:absolute; top:8%; left:50%; transform:translate(-50%,-8px) scale(0.85);
+    background:#fff; border-radius:18px; padding:8px 16px; font-weight:800; color:var(--ink);
+    font-size:clamp(13px,3.4vw,16px);
+    box-shadow:0 6px 14px rgba(0,0,0,0.15);
+    opacity:0; transition:opacity .25s ease, transform .25s ease;
+    white-space:nowrap; z-index:5;
+  }
+  #speech::after{
+    content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+    border-width:8px 6px 0 6px;border-style:solid;border-color:#fff transparent transparent transparent;
+  }
+  #speech.show{opacity:1;transform:translate(-50%,0) scale(1);}
+ 
+  #buttons{
+    display:grid;grid-template-columns:1fr 1fr;gap:12px;
+    width:min(92vw,360px);margin-top:14px;
+  }
+  .bigBtn{grid-column:1/3;}
+  .btn{
+    border:none;border-radius:22px;padding:16px 10px;font-weight:800;font-size:15px;color:#fff;
+    cursor:pointer;position:relative;overflow:hidden;
+    box-shadow:0 6px 0 rgba(0,0,0,0.15), 0 10px 18px rgba(0,0,0,0.18);
+    transition:transform .08s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.18);}
+  .btn.click{background:linear-gradient(180deg,#FFB6D2,var(--pink-deep));font-size:18px;padding:20px 10px;}
+  .btn.hug{background:linear-gradient(180deg,#FFDCA8,#F3B87A);}
+  .btn.dance{background:linear-gradient(180deg,#C9E7FF,#8FC7EE);}
+  .btn.surprise{background:linear-gradient(180deg,#E3C9FF,#C79EF0);}
+ 
+  #footer{margin-top:16px;font-size:11px;color:#a3826b;display:flex;align-items:center;gap:8px;}
+  #muteBtn{
+    border:2px solid #fff;background:rgba(255,255,255,0.7);border-radius:14px;padding:4px 10px;
+    font-size:12px;font-weight:800;color:var(--brown);cursor:pointer;
+  }
+ 
+  #confettiLayer{position:fixed;inset:0;pointer-events:none;z-index:20;overflow:hidden;}
+ 
+  @media (max-width:420px){
+    .btn{font-size:13px;padding:14px 8px;}
+    .btn.click{font-size:16px;padding:18px 8px;}
+  }
+</style>
+</head>
+<body>
+ 
+<div id="bgHearts"></div>
+ 
+<div id="wrap">
+  <h1>Bear Love 🧸💕</h1>
+  <p class="tagline">a cozy little corner of kindness</p>
+ 
+  <div id="stageCard">
+    <canvas id="c"></canvas>
+    <div id="speech"></div>
+  </div>
+ 
+  <div id="buttons">
+    <button class="btn click bigBtn" id="btnClick">Click Me ❤️</button>
+    <button class="btn hug" id="btnHug">Hug Me 🧸</button>
+    <button class="btn dance" id="btnDance">Dance 💃</button>
+    <button class="btn surprise bigBtn" id="btnSurprise">Surprise 🎁</button>
+  </div>
+ 
+  <div id="footer">
+    <span>made with love, just for you</span>
+    <button id="muteBtn">🔊 Sound On</button>
+  </div>
+</div>
+ 
+<div id="confettiLayer"></div>
+ 
+<script>
+(function(){
+"use strict";
+ 
+/* ============ canvas setup ============ */
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const L = 360; // logical square resolution
+function resize(){
+  const dpr = window.devicePixelRatio||1;
+  canvas.width = L*dpr; canvas.height = L*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+resize(); window.addEventListener('resize', resize);
+ 
+function rand(a,b){ return a+Math.random()*(b-a); }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+ 
+/* ============ audio (synth, no files) ============ */
+const SFX = (function(){
+  let actx=null, muted=false, master;
+  function ensure(){
+    if(actx) return;
+    actx = new (window.AudioContext||window.webkitAudioContext)();
+    master = actx.createGain(); master.gain.value = 0.6; master.connect(actx.destination);
+  }
+  function tone(freq,dur,type,vol,delay){
+    if(muted) return;
+    ensure();
+    const t0 = actx.currentTime+(delay||0);
+    const o = actx.createOscillator(); const g = actx.createGain();
+    o.type=type||'sine'; o.frequency.setValueAtTime(freq,t0);
+    g.gain.setValueAtTime(0,t0);
+    g.gain.linearRampToValueAtTime(vol!==undefined?vol:0.2, t0+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0+dur+0.05);
+  }
+  let musicNodes=[], musicPlaying=false, musicTimeout=null;
+  function playChime(seq){
+    seq.forEach((n,i)=>tone(n[0], n[1]||0.18, 'sine', 0.18, i? undefined: 0));
+  }
+  function clickSound(){ ensure(); tone(700,0.09,'triangle',0.16); }
+  function hugSound(){ ensure(); playChime([[523,0.16],[659,0.16],[784,0.2]].map((n,i)=>[n[0],n[1]])); 
+    // stagger manually
+  }
+  function hugChime(){ ensure(); tone(523,0.16,'sine',0.2,0); tone(659,0.16,'sine',0.2,0.1); tone(784,0.22,'sine',0.2,0.2); }
+  function surpriseChime(){ ensure(); tone(659,0.14,'sine',0.2,0); tone(784,0.14,'sine',0.2,0.08); tone(988,0.14,'sine',0.2,0.16); tone(1319,0.22,'sine',0.22,0.26); }
+  function popSound(){ ensure(); tone(880,0.08,'square',0.12); }
+  function danceLoop(){
+    if(muted || musicPlaying) return;
+    ensure(); musicPlaying=true;
+    const notes = [392,440,494,523,587,523,494,440];
+    let i=0;
+    function step(){
+      if(!musicPlaying) return;
+      tone(notes[i%notes.length]*1, 0.22,'triangle',0.14);
+      tone(notes[i%notes.length]*2, 0.18,'sine',0.06,0.05);
+      i++;
+      musicTimeout = setTimeout(step, 260);
+    }
+    step();
+  }
+  function stopDance(){ musicPlaying=false; if(musicTimeout) clearTimeout(musicTimeout); }
+  let ambientStarted=false, ambientNodes=[];
+  function startAmbient(){
+    if(ambientStarted||muted) return; ambientStarted=true; ensure();
+    const o1=actx.createOscillator(); o1.type='sine'; o1.frequency.value=261.6;
+    const o2=actx.createOscillator(); o2.type='sine'; o2.frequency.value=329.6;
+    const g=actx.createGain(); g.gain.value=0.035;
+    const filt=actx.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=900;
+    o1.connect(g); o2.connect(g); g.connect(filt); filt.connect(master);
+    const lfo=actx.createOscillator(); lfo.frequency.value=0.06;
+    const lfoGain=actx.createGain(); lfoGain.gain.value=250;
+    lfo.connect(lfoGain); lfoGain.connect(filt.frequency);
+    o1.start();o2.start();lfo.start();
+    ambientNodes.push(o1,o2,lfo);
+  }
+  function setMuted(m){
+    muted=m;
+    if(master) master.gain.value = m?0:0.6;
+    if(m) stopDance();
+  }
+  return {clickSound,hugChime,surpriseChime,popSound,danceLoop,stopDance,startAmbient,setMuted, get muted(){return muted;}};
+})();
+ 
+/* ============ background floating hearts (DOM) ============ */
+const bgHearts = document.getElementById('bgHearts');
+const HEART_EMOJIS = ['💗','💕','💓','💖','🩷'];
+function spawnBgHeart(){
+  const el = document.createElement('div');
+  el.className='bgHeart';
+  el.textContent = HEART_EMOJIS[Math.floor(rand(0,HEART_EMOJIS.length))];
+  el.style.left = rand(0,98)+'vw';
+  el.style.fontSize = rand(14,30)+'px';
+  const dur = rand(7,13);
+  el.style.animationDuration = dur+'s';
+  bgHearts.appendChild(el);
+  setTimeout(()=>el.remove(), dur*1000+200);
+}
+setInterval(spawnBgHeart, 900);
+for(let i=0;i<6;i++) setTimeout(spawnBgHeart, i*300);
+ 
+/* ============ confetti / stars overlay (DOM) ============ */
+const confettiLayer = document.getElementById('confettiLayer');
+const CONFETTI_COLORS = ['#FF9EC0','#FFD6A5','#C9E7FF','#E3C9FF','#FFF3B0','#B5EAD7'];
+function confettiBurst(){
+  for(let i=0;i<38;i++){
+    const el = document.createElement('div');
+    const isStar = Math.random()<0.35;
+    el.textContent = isStar? '⭐' : '';
+    const size = rand(8,16);
+    if(!isStar){
+      el.style.background = CONFETTI_COLORS[Math.floor(rand(0,CONFETTI_COLORS.length))];
+      el.style.width = size+'px'; el.style.height = (size*0.6)+'px';
+      el.style.borderRadius = Math.random()>0.5? '50%':'3px';
+    } else {
+      el.style.fontSize = size+'px';
+    }
+    el.style.position='absolute';
+    const startX = 50 + rand(-10,10);
+    el.style.left = startX+'vw';
+    el.style.top = '38%';
+    el.style.opacity='1';
+    const dx = rand(-140,140), dy = rand(-260,-60), rot = rand(-360,360), dur = rand(900,1600);
+    el.animate([
+      {transform:`translate(0,0) rotate(0deg)`, opacity:1},
+      {transform:`translate(${dx*0.6}px, ${dy}px) rotate(${rot*0.6}deg)`, opacity:1, offset:0.5},
+      {transform:`translate(${dx}px, ${dy+260}px) rotate(${rot}deg)`, opacity:0}
+    ], {duration:dur, easing:'cubic-bezier(.2,.7,.3,1)'});
+    confettiLayer.appendChild(el);
+    setTimeout(()=>el.remove(), dur+50);
+  }
+}
+ 
+/* ============ speech bubble ============ */
+const speechEl = document.getElementById('speech');
+let speechTimeout=null;
+function say(text, holdMs){
+  speechEl.textContent = text;
+  speechEl.classList.add('show');
+  if(speechTimeout) clearTimeout(speechTimeout);
+  speechTimeout = setTimeout(()=>{ speechEl.classList.remove('show'); }, holdMs||2200);
+}
+ 
+/* ============ particles inside canvas (sparkles + hearts near bear) ============ */
+let particles = [];
+function addParticle(p){ particles.push(p); }
+function updateParticles(dt){
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.life -= dt;
+    p.x += p.vx*dt/16; p.y += p.vy*dt/16;
+    if(p.grav) p.vy += 0.02*dt/16;
+    if(p.life<=0) particles.splice(i,1);
+  }
+}
+function drawParticles(){
+  for(const p of particles){
+    const a = clamp(p.life/p.maxLife,0,1);
+    ctx.save();
+    ctx.globalAlpha=a;
+    ctx.translate(p.x,p.y);
+    if(p.type==='heart'){
+      ctx.font=(p.size||16)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText('💗',0,0);
+    } else if(p.type==='sparkle'){
+      ctx.fillStyle=p.color||'#FFF3B0';
+      ctx.rotate(p.life*0.02);
+      for(let k=0;k<4;k++){
+        ctx.rotate(Math.PI/2);
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(2,p.size); ctx.lineTo(0,p.size*2); ctx.lineTo(-2,p.size); ctx.closePath(); ctx.fill();
+      }
+    } else if(p.type==='star'){
+      ctx.font=(p.size||14)+'px sans-serif'; ctx.textAlign='center'; ctx.fillText('⭐',0,0);
+    }
+    ctx.restore();
+  }
+}
+function burst(x,y,type,count,opts){
+  opts=opts||{};
+  for(let i=0;i<count;i++){
+    addParticle(Object.assign({
+      x:x+rand(-14,14), y:y+rand(-10,10),
+      vx:rand(-1,1), vy:rand(-2.2,-0.6),
+      life:rand(600,1000), maxLife:1000, size:rand(3,6), grav:true, type
+    }, opts));
+  }
+}
+ 
+/* ============ ambient sparkles around the bear ============ */
+let sparkleAcc=0;
+function ambientSparkles(dt){
+  sparkleAcc += dt;
+  if(sparkleAcc>500){
+    sparkleAcc=0;
+    const ang = rand(0,Math.PI*2);
+    addParticle({
+      x:180+Math.cos(ang)*95, y:210+Math.sin(ang)*70,
+      vx:rand(-0.2,0.2), vy:rand(-0.5,-0.2),
+      life:900, maxLife:900, size:rand(2.5,4), grav:false, type:'sparkle', color:'#FFF3B0'
+    });
+  }
+}
+ 
+/* ============ BEAR state machine ============ */
+const bear = {
+  state:'idle', // idle, wave, smile, hug, dance, jump, surprise
+  timer:0,
+  blinkTimer: rand(1500,3000),
+  blink:0,
+  bounce:0,
+  mouth:'smile', // smile, bigsmile, open
+};
+function setBearState(s, dur){
+  bear.state = s; bear.timer = dur||1600;
+}
+ 
+/* ============ drawing the bear ============ */
+function drawBear(dt){
+  const t = performance.now()*0.001;
+  let bx=180, by=215;
+  let squashX=1, squashY=1, rot=0, armL=0, armR=0, legOff=0, mouth='smile', browHappy=false;
+ 
+  bear.blinkTimer -= dt;
+  if(bear.blinkTimer<=0){ bear.blink=180; bear.blinkTimer=rand(2000,4200); }
+  if(bear.blink>0) bear.blink -= dt;
+ 
+  const bob = Math.sin(t*1.6)*3;
+  by += bob;
+ 
+  if(bear.state==='wave'){
+    armR = -70 + Math.sin(t*10)*20;
+    mouth='bigsmile';
+  } else if(bear.state==='smile'){
+    mouth='bigsmile'; browHappy=true;
+    squashY = 1+Math.sin(t*3)*0.02;
+  } else if(bear.state==='hug'){
+    armL = 45; armR=-45; mouth='bigsmile';
+    squashX = 1.06; squashY=0.96;
+  } else if(bear.state==='dance'){
+    rot = Math.sin(t*6)*0.14;
+    armL = Math.sin(t*6)*45-20;
+    armR = Math.sin(t*6+Math.PI)*45+20;
+    legOff = Math.sin(t*6)*10;
+    by += Math.sin(t*6)*4;
+    mouth='bigsmile';
+  } else if(bear.state==='jump'){
+    const p = 1-clamp(bear.timer/500,0,1);
+    by -= Math.sin(p*Math.PI)*26;
+    squashY = 1-Math.sin(p*Math.PI)*0.12;
+    squashX = 1+Math.sin(p*Math.PI)*0.08;
+    armL=-30; armR=30; mouth='open';
+  } else if(bear.state==='surprise'){
+    mouth='open'; browHappy=true;
+    squashX = 1+Math.sin(t*10)*0.03;
+  } else { // idle
+    mouth='smile';
+  }
+ 
+  ctx.save();
+  ctx.translate(bx,by);
+  ctx.rotate(rot);
+  ctx.scale(squashX,squashY);
+ 
+  // shadow
+  ctx.save(); ctx.globalAlpha=0.18; ctx.fillStyle='#8B5E3C';
+  ctx.beginPath(); ctx.ellipse(0, 108, 46, 12, 0,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+ 
+  const fur = '#D9A066', furLight='#F0C48A', belly='#FFF3E0';
+ 
+  // legs
+  drawLimb(-26, 78, legOff, 14, 30, fur, furLight, true);
+  drawLimb(26, 78, -legOff, 14, 30, fur, furLight, true);
+ 
+  // body
+  ctx.fillStyle = fur;
+  ctx.beginPath(); ctx.ellipse(0,50,46,52,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = belly;
+  ctx.beginPath(); ctx.ellipse(0,58,26,34,0,0,Math.PI*2); ctx.fill();
+ 
+  // arms
+  drawLimb(-42, 40, armL, 14, 40, fur, furLight, false);
+  drawLimb(42, 40, armR, 14, 40, fur, furLight, false);
+ 
+  // head group
+  ctx.save();
+  ctx.translate(0,-18);
+  // ears
+  ctx.fillStyle = fur;
+  ctx.beginPath(); ctx.arc(-34,-34,20,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(34,-34,20,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = furLight;
+  ctx.beginPath(); ctx.arc(-34,-34,10,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(34,-34,10,0,Math.PI*2); ctx.fill();
+  // head
+  ctx.fillStyle = fur;
+  ctx.beginPath(); ctx.arc(0,0,46,0,Math.PI*2); ctx.fill();
+  // muzzle
+  ctx.fillStyle = belly;
+  ctx.beginPath(); ctx.ellipse(0,16,26,20,0,0,Math.PI*2); ctx.fill();
+  // blush
+  ctx.fillStyle='rgba(255,158,192,0.55)';
+  ctx.beginPath(); ctx.ellipse(-30,14,9,6,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(30,14,9,6,0,0,Math.PI*2); ctx.fill();
+ 
+  // eyes
+  const closed = bear.blink>0 && bear.state!=='surprise';
+  if(closed){
+    ctx.strokeStyle='#4A362A'; ctx.lineWidth=3; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(-22,-4); ctx.quadraticCurveTo(-14,4,-6,-4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(6,-4); ctx.quadraticCurveTo(14,4,22,-4); ctx.stroke();
+  } else {
+    // big shiny eyes
+    ctx.fillStyle='#3E2E26';
+    ctx.beginPath(); ctx.ellipse(-14,-4, 10, 13, 0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(14,-4, 10, 13, 0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.beginPath(); ctx.arc(-17,-9,3.4,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(11,-9,3.4,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=0.7;
+    ctx.beginPath(); ctx.arc(-11,-1,1.8,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(17,-1,1.8,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=1;
+    if(browHappy){
+      ctx.strokeStyle='#4A362A'; ctx.lineWidth=2.4; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(-22,-20); ctx.quadraticCurveTo(-14,-25,-6,-20); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(6,-20); ctx.quadraticCurveTo(14,-25,22,-20); ctx.stroke();
+    }
+  }
+  // nose
+  ctx.fillStyle='#4A362A';
+  ctx.beginPath(); ctx.ellipse(0,10,6,4.4,0,0,Math.PI*2); ctx.fill();
+  // mouth
+  ctx.strokeStyle='#4A362A'; ctx.lineWidth=2.6; ctx.lineCap='round';
+  if(mouth==='open'){
+    ctx.fillStyle='#7a4a3a';
+    ctx.beginPath(); ctx.ellipse(0,22,8,7,0,0,Math.PI*2); ctx.fill();
+  } else {
+    const w = mouth==='bigsmile'? 15:9;
+    ctx.beginPath(); ctx.moveTo(-w,17); ctx.quadraticCurveTo(0,17+w, w,17); ctx.stroke();
+  }
+  ctx.restore(); // head group
+ 
+  ctx.restore(); // whole bear
+ 
+  // floating heart above head when hugging/smiling
+  if(bear.state==='hug' || bear.state==='surprise'){
+    if(Math.random()<0.15) burst(bx+rand(-20,20), by-70, 'heart', 1, {vy:-1.2, size:16});
+  }
+}
+function drawLimb(ox,oy,angle,w,len,fur,furLight,isLeg){
+  ctx.save();
+  ctx.translate(ox,oy);
+  ctx.rotate(angle*Math.PI/180);
+  ctx.fillStyle=fur;
+  roundRect(ctx,-w/2,0,w,len, w/2); ctx.fill();
+  ctx.fillStyle=furLight;
+  ctx.beginPath(); ctx.arc(0,len-2, w/2+2, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+ 
+/* ============ button handlers ============ */
+let bearBusyUntil = 0;
+function lockBear(ms){ bearBusyUntil = performance.now()+ms; }
+function bearFree(){ return performance.now() >= bearBusyUntil; }
+ 
+document.getElementById('btnClick').addEventListener('click', ()=>{
+  SFX.startAmbient(); SFX.clickSound();
+  setBearState('wave', 1400); lockBear(1400);
+  say(' hello lana! ❤️', 1400);
+  burst(180,150,'heart',4,{size:15});
+  setTimeout(()=>{
+    if(bear.state==='wave') { /* transitions naturally via timer */ }
+    setBearState('smile', 1800); lockBear(1800);
+    say('I love you! 🥰', 1800);
+    burst(180,150,'heart',6,{size:16});
+    SFX.popSound();
+  }, 1500);
+});
+ 
+document.getElementById('btnHug').addEventListener('click', ()=>{
+  SFX.startAmbient(); SFX.hugChime();
+  setBearState('hug', 1600); lockBear(1600);
+  say('Aww, big hug! 🤗', 1600);
+  burst(180,190,'heart',10,{size:18});
+});
+ 
+document.getElementById('btnDance').addEventListener('click', ()=>{
+  SFX.startAmbient();
+  setBearState('dance', 2200); lockBear(2200);
+  say('Dance time! 💃', 2200);
+  SFX.danceLoop();
+  setTimeout(()=>SFX.stopDance(), 2200);
+  burst(180,190,'sparkle',8,{color:'#C9E7FF'});
+});
+ 
+document.getElementById('btnSurprise').addEventListener('click', ()=>{
+  SFX.startAmbient(); SFX.surpriseChime();
+  setBearState('surprise', 1800); lockBear(1800);
+  say("You're amazing! 🌸", 2000);
+  confettiBurst();
+  burst(180,190,'star',8,{size:14});
+  burst(180,190,'heart',6,{size:16});
+});
+ 
+/* occasional idle jump for extra cuteness */
+setInterval(()=>{
+  if(bearFree() && bear.state==='idle' && Math.random()<0.5){
+    setBearState('jump', 500); lockBear(500);
+  }
+}, 6000);
+ 
+/* mute toggle */
+const muteBtn = document.getElementById('muteBtn');
+muteBtn.addEventListener('click', ()=>{
+  const nowMuted = !SFX.muted;
+  SFX.setMuted(nowMuted);
+  muteBtn.textContent = nowMuted? '🔇 Sound Off' : '🔊 Sound On';
+});
+ 
+/* first user gesture unlocks audio context on iOS/browsers */
+document.addEventListener('pointerdown', ()=>{ SFX.startAmbient(); }, {once:true});
+ 
+/* ============ main loop ============ */
+let last = performance.now();
+function loop(now){
+  let dt = now-last; last = now;
+  dt = Math.min(dt,48);
+ 
+  if(bear.timer>0){
+    bear.timer -= dt;
+    if(bear.timer<=0 && (bear.state==='hug'||bear.state==='dance'||bear.state==='surprise'||bear.state==='wave'||bear.state==='jump')){
+      bear.state='idle';
+    }
+  }
+ 
+  ambientSparkles(dt);
+  updateParticles(dt);
+ 
+  ctx.clearRect(0,0,L,L);
+  // soft inner glow backdrop already via CSS card; add gentle radial highlight
+  drawBear(dt);
+  drawParticles();
+ 
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+ 
+})();
+</script>
+</body>
+</html>
